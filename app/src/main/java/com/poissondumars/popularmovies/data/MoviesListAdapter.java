@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.poissondumars.popularmovies.API.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.R;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -65,12 +66,16 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Mo
 
         if (movie == null) return;
 
-        Uri imageUri = TheMoviesDbApiClient.buildUriForImage(movie.thumbnailPath);
+        Uri imageUri = TheMoviesDbApiClient.buildUriForImage(movie.posterPath);
 
         if (imageUri != null) {
             Context context = holder.itemView.getContext();
-            ImageView imageView = holder.mPosterView;
-            Picasso.with(context).load(imageUri).into(imageView);
+            final ImageView imageView = holder.mPosterView;
+            Picasso.with(context).load(imageUri)
+                    .error(R.drawable.no_image)
+                    .placeholder( R.drawable.progress_animation )
+                    .fit()
+                    .into(imageView);
         }
     }
 

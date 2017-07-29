@@ -27,8 +27,6 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
     private RecyclerView mRecyclerView;
     private ProgressBar mLoadingIndicator;
 
-    private String currentSorting;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,14 +44,11 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        currentSorting = TheMoviesDbApiClient.SORT_BY_POPULARITY;
-        loadMoviesList();
-
-        setTitle(currentSorting);
+        loadMoviesList(TheMoviesDbApiClient.SORT_BY_POPULARITY);
     }
 
-    private void loadMoviesList() {
-        new FetchMoviesTask().execute(currentSorting);
+    private void loadMoviesList(String sorting) {
+        new FetchMoviesTask().execute(sorting);
     }
 
     @Override
@@ -66,10 +61,16 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.sort_action) {
+        if (itemId == R.id.sort_by_popularity_action) {
             mMoviesListAdapter.setMoviesData(null);
-            currentSorting = TheMoviesDbApiClient.SORT_BY_VOTES;
-            loadMoviesList();
+            setTitle(R.string.sort_by_popularity_title);
+            loadMoviesList(TheMoviesDbApiClient.SORT_BY_POPULARITY);
+        }
+
+        if (itemId == R.id.sort_by_rating_action) {
+            mMoviesListAdapter.setMoviesData(null);
+            setTitle(R.string.sort_by_rating_title);
+            loadMoviesList(TheMoviesDbApiClient.SORT_BY_VOTES);
         }
 
         return super.onContextItemSelected(item);

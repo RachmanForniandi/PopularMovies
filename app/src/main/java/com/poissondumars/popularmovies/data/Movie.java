@@ -12,7 +12,7 @@ public class Movie implements Serializable {
     public int id;
     public double popularity;
     public String title;
-    public String thumbnailPath;
+    public String backdropPath;
     public String posterPath;
     public String overview;
     public Date releaseDate;

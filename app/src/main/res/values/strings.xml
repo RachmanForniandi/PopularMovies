@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Popular Movies</string>
 
-    <string name="sort_by_popularity_title">By popularity</string>
-    <string name="sort_by_rating_title">By rating</string>
+    <string name="sort_by_popularity_title">Sorted by popularity</string>
+    <string name="sort_by_rating_title">Sorted by rating</string>
 
     <!-- Sorting menu -->
-    <string name="sort_action">Sort</string>
+    <string name="sort_menu_title">Sort</string>
+    <string name="sort_by_popularity_action">By popularity</string>
+    <string name="sort_by_rating_action">By rating</string>
 </resources>

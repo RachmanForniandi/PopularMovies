@@ -8,6 +8,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by admin on 28.07.17.
  */
@@ -18,7 +23,9 @@ public class MoviesDbJSONHelper {
     private static final String OWN_POPULARITY = "vote_average";
     private static final String OWN_TITLE = "title";
     private static final String OWN_POSTER = "poster_path";
+    private static final String OWN_BACKDROP = "backdrop_path";
     private static final String OWN_OVERVIEW = "overview";
+    private static final String OWN_RELEASE_DATE = "release_date";
 
     public static Movie[] getMoviesFromJson(Context context, String moviesListJson) throws JSONException {
 
@@ -52,6 +59,17 @@ public class MoviesDbJSONHelper {
             movie.title = movieJsonObject.getString(OWN_TITLE);
             movie.popularity = movieJsonObject.getDouble(OWN_POPULARITY);
             movie.posterPath = movieJsonObject.getString(OWN_POSTER);
+            movie.backdropPath = movieJsonObject.getString(OWN_BACKDROP);
+
+            try {
+                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                String releaseDateString = movieJsonObject.getString(OWN_RELEASE_DATE);
+                Date releaseDate = df.parse(releaseDateString);
+                String newDateString = df.format(releaseDate);
+                movie.releaseDate = releaseDate;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         return  movie;
@@ -62,6 +80,8 @@ public class MoviesDbJSONHelper {
                 movieJsonObject.has(OWN_OVERVIEW) &&
                 movieJsonObject.has(OWN_POPULARITY) &&
                 movieJsonObject.has(OWN_POSTER) &&
+                movieJsonObject.has(OWN_BACKDROP) &&
+                movieJsonObject.has(OWN_RELEASE_DATE) &&
                 movieJsonObject.has(OWN_TITLE);
     }
 }

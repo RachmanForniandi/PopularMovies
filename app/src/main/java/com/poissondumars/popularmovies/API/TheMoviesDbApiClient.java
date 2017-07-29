@@ -71,13 +71,17 @@ public class TheMoviesDbApiClient {
     }
 
     @Nullable
-    public static Uri buildUriForImage(String path) {
-        String imageSize = "w185";
-
+    public static Uri buildUriForImage(String path, String imageSize) {
         return Uri.parse(IMAGE_BASE).buildUpon()
                 .appendEncodedPath(imageSize)
                 .appendEncodedPath(path)
                 .build();
+    }
+
+    @Nullable
+    public static Uri buildUriForImage(String path) {
+        String imageSize = "w185";
+        return buildUriForImage(path, imageSize);
     }
 
     @Nullable
