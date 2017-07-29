@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.poissondumars.popularmovies.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -22,17 +24,14 @@ public class TheMoviesDbApiClient {
     private static final String IMAGE_BASE = "http://image.tmdb.org/t/p/";
 
     //    Api routes
-    private static final String MOVIES_LIST = "discover/movie";
+    public static final String POPULAR_MOVIES_LIST = "movie/popular";
+    public static final String TOP_RATED_MOVIES_LIST = "movie/top_rated";
 
     //    Params names
-    private static final String SORT_BY_PARAM = "sort_by";
     private static final String API_KEY_PARAM = "api_key";
-    private static final String PAGE_PARAM = "page";
 
     //    Params values
-    public static final String SORT_BY_POPULARITY = "popularity.desc";
-    public static final String SORT_BY_VOTES = "vote_average.desc";
-    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String API_KEY = BuildConfig.API_KEY;
 
     private static Uri.Builder buildBaseUri() {
         return Uri.parse(API_BASE).buildUpon()
@@ -50,15 +49,13 @@ public class TheMoviesDbApiClient {
         return requestUrl;
     }
 
-    public static String getMoviesList(String sortedBy) {
+    public static String getMoviesList(String listPath) {
         Uri moviesListUri = buildBaseUri()
-                .appendEncodedPath(MOVIES_LIST)
-                .appendQueryParameter(SORT_BY_PARAM, sortedBy)
+                .appendEncodedPath(listPath)
                 .build();
 
         String response = "";
         URL requestUrl = buildUrlFromUri(moviesListUri);
-        Log.d("TheMoviesDbApiClient", requestUrl.toString());
         if (requestUrl != null) {
             try {
                 response = getResponseFromUrl(requestUrl);

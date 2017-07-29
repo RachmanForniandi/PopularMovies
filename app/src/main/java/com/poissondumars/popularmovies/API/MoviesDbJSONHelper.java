@@ -2,6 +2,7 @@ package com.poissondumars.popularmovies.API;
 
 import android.content.Context;
 
+import com.poissondumars.popularmovies.R;
 import com.poissondumars.popularmovies.data.Movie;
 
 import org.json.JSONArray;
@@ -40,14 +41,14 @@ public class MoviesDbJSONHelper {
             movies = new Movie[resultsArray.length()];
 
             for(int i = 0; i < resultsArray.length(); i++) {
-                movies[i] = getMovieFromJson(resultsArray.getString(i));
+                movies[i] = getMovieFromJson(context, resultsArray.getString(i));
             }
         }
 
         return movies;
     }
 
-    private static Movie getMovieFromJson(String movieJson) throws JSONException {
+    private static Movie getMovieFromJson(Context context, String movieJson) throws JSONException {
 
         Movie movie = null;
         JSONObject movieJsonObject = new JSONObject(movieJson);
@@ -62,7 +63,8 @@ public class MoviesDbJSONHelper {
             movie.backdropPath = movieJsonObject.getString(OWN_BACKDROP);
 
             try {
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                String dateFormat = context.getString(R.string.api_date_format);
+                DateFormat df = new SimpleDateFormat(dateFormat);
                 String releaseDateString = movieJsonObject.getString(OWN_RELEASE_DATE);
                 Date releaseDate = df.parse(releaseDateString);
                 String newDateString = df.format(releaseDate);

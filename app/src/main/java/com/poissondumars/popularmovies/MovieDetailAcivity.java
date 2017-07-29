@@ -19,32 +19,32 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by aleksejsobolevskij on 29.07.17.
  */
 
 public class MovieDetailAcivity extends AppCompatActivity {
 
-    private TextView mTitleTextView;
-    private ImageView mPosterImageView;
-    private TextView mOverviewTextView;
-    private TextView mRatingTextView;
-    private TextView mReleaseDateTextView;
+    @BindView(R.id.tv_title) TextView mTitleTextView;
+    @BindView(R.id.iv_poster) ImageView mPosterImageView;
+    @BindView(R.id.tv_overview) TextView mOverviewTextView;
+    @BindView(R.id.tv_rating) TextView mRatingTextView;
+    @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        mTitleTextView = (TextView) findViewById(R.id.tv_title);
-        mPosterImageView = (ImageView) findViewById(R.id.iv_poster);
-        mOverviewTextView = (TextView) findViewById(R.id.tv_overview);
-        mRatingTextView = (TextView) findViewById(R.id.tv_rating);
-        mReleaseDateTextView = (TextView) findViewById(R.id.tv_release_date);
+        ButterKnife.bind(this);
 
+        String movieExtraKey = getString(R.string.movie_extra_key);
         Intent intentThatOpenedThisActivity = getIntent();
-        if (intentThatOpenedThisActivity.hasExtra("movie")) {
-            Movie selectedMovie = (Movie) intentThatOpenedThisActivity.getSerializableExtra("movie");
+        if (intentThatOpenedThisActivity.hasExtra(movieExtraKey)) {
+            Movie selectedMovie = (Movie) intentThatOpenedThisActivity.getParcelableExtra(movieExtraKey);
             setUpViewsWithMovieData(selectedMovie);
         }
     }
@@ -52,11 +52,14 @@ public class MovieDetailAcivity extends AppCompatActivity {
     private void setUpViewsWithMovieData(Movie movie) {
         mTitleTextView.setText(movie.title);
         mOverviewTextView.setText(movie.overview);
-        mRatingTextView.setText("Rating: " + String.valueOf(movie.popularity));
+        String ratingViewText = getString(R.string.rating_tv_template, movie.popularity);
+        mRatingTextView.setText(ratingViewText);
 
         if (movie.releaseDate != null) {
-            DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-            mReleaseDateTextView.setText("Released at " + df.format(movie.releaseDate));
+            String dateFormat = getString(R.string.detail_activity_date_format);
+            DateFormat df = new SimpleDateFormat(dateFormat);
+            String releasedDateViewText = getString(R.string.release_date_tv_template, df.format(movie.releaseDate));
+            mReleaseDateTextView.setText(releasedDateViewText);
         }
 
         Uri posterUri = TheMoviesDbApiClient.buildUriForImage(movie.backdropPath, "w342");

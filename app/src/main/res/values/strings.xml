@@ -1,11 +1,14 @@
 <resources>
     <string name="app_name">Popular Movies</string>
 
-    <string name="sort_by_popularity_title">Sorted by popularity</string>
-    <string name="sort_by_rating_title">Sorted by rating</string>
+    <string name="popular_movies">Popular</string>
+    <string name="top_rated_movies">Top rated</string>
 
-    <!-- Sorting menu -->
-    <string name="sort_menu_title">Sort</string>
-    <string name="sort_by_popularity_action">By popularity</string>
-    <string name="sort_by_rating_action">By rating</string>
+    <string name="movie_extra_key">movie_extra_key</string>
+    
+    <string name="rating_tv_template">Rating: %1$.1f</string>
+    <string name="api_date_format">yyyy-MM-dd</string>
+    <string name="detail_activity_date_format">dd.MM.yyyy</string>
+    <string name="release_date_tv_template">Released at %1$s</string>
+    
 </resources>
