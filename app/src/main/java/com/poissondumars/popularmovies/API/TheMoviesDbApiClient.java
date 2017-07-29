@@ -32,7 +32,7 @@ public class TheMoviesDbApiClient {
     //    Params values
     public static final String SORT_BY_POPULARITY = "popularity.desc";
     public static final String SORT_BY_VOTES = "vote_average.desc";
-    private static final String API_KEY = "YOUR_API_KEY";
+    private static final String API_KEY = "5c3de77d7bb8e1a6cc06c3cc11b8909f";
 
     private static Uri.Builder buildBaseUri() {
         return Uri.parse(API_BASE).buildUpon()
