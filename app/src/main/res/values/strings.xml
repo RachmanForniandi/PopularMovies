@@ -10,5 +10,7 @@
     <string name="api_date_format">yyyy-MM-dd</string>
     <string name="detail_activity_date_format">dd.MM.yyyy</string>
     <string name="release_date_tv_template">Released at %1$s</string>
-    
+
+    <string name="movie_poster_description">Movie Poster</string>
+
 </resources>

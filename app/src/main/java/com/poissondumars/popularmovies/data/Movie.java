@@ -29,7 +29,7 @@ public class Movie implements Parcelable {
         backdropPath = in.readString();
         posterPath = in.readString();
         overview = in.readString();
-        // TODO: Convert date properly
+        releaseDate = (Date) in.readSerializable();
 
     }
 
@@ -58,5 +58,6 @@ public class Movie implements Parcelable {
         dest.writeString(backdropPath);
         dest.writeString(posterPath);
         dest.writeString(overview);
+        dest.writeSerializable(releaseDate);
     }
 }

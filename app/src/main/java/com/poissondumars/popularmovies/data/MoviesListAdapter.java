@@ -56,8 +56,7 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Mo
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.movie_grid_item, parent, false);
 
-        MoviesListAdapterViewHolder viewHolder = new MoviesListAdapterViewHolder(view);
-        return viewHolder;
+        return new MoviesListAdapterViewHolder(view);;
     }
 
     @Override
