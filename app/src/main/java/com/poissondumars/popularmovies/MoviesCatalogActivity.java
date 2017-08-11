@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.poissondumars.popularmovies.api.MoviesDbJSONHelper;
-import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
+import com.poissondumars.popularmovies.API.MoviesDbJSONHelper;
+import com.poissondumars.popularmovies.API.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.data.Movie;
 import com.poissondumars.popularmovies.data.MoviesListAdapter;
 

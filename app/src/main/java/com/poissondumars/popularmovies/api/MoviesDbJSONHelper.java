@@ -1,4 +1,4 @@
-package com.poissondumars.popularmovies.api;
+package com.poissondumars.popularmovies.API;
 
 import android.content.Context;
 
