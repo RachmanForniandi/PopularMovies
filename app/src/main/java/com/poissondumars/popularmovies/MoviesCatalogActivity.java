@@ -2,8 +2,8 @@ package com.poissondumars.popularmovies;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -65,7 +65,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sorting, menu);
+        getMenuInflater().inflate(R.menu.catalog_actions, menu);
         return true;
     }
 
