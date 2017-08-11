@@ -8,9 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.poissondumars.popularmovies.API.TheMoviesDbApiClient;
+import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.R;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**

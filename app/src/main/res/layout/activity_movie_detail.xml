@@ -13,13 +13,13 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:textSize="32sp" />
+            android:layout_margin="@dimen/default_view_margin"
+            android:textSize="@dimen/header_text_size" />
 
         <ImageView
             android:id="@+id/iv_poster"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="@dimen/detail_movie_poster_height"
             android:contentDescription="@string/movie_poster_description"
             android:scaleType="center" />
 
@@ -27,13 +27,13 @@
             android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:textSize="18sp" />
+            android:layout_margin="@dimen/default_view_margin"
+            android:textSize="@dimen/content_text_size" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/default_view_margin"
             android:orientation="horizontal">
 
             <TextView
@@ -41,14 +41,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="14sp" />
+                android:textSize="@dimen/supplimentory_text_size" />
 
             <TextView
                 android:id="@+id/tv_release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="14sp" />
+                android:textSize="@dimen/supplimentory_text_size" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
