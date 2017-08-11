@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.poissondumars.popularmovies.API.TheMoviesDbApiClient;
+import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.data.Movie;
 import com.squareup.picasso.Picasso;
 

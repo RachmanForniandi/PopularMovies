@@ -1,4 +1,4 @@
-package com.poissondumars.popularmovies.API;
+package com.poissondumars.popularmovies.api;
 
 
 import android.net.Uri;
