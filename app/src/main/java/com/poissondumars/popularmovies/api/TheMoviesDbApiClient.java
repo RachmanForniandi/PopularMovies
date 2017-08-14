@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.poissondumars.popularmovies.BuildConfig;
+import com.poissondumars.popularmovies.data.Review;
+import com.poissondumars.popularmovies.data.Trailer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +25,10 @@ public class TheMoviesDbApiClient {
     private static final String IMAGE_BASE = "http://image.tmdb.org/t/p/";
 
     //    Api routes
-    public static final String POPULAR_MOVIES_LIST = "movie/popular";
-    public static final String TOP_RATED_MOVIES_LIST = "movie/top_rated";
+    public static final String POPULAR_MOVIES = "movie/popular";
+    public static final String TOP_RATED_MOVIES = "movie/top_rated";
+    public static final String MOVIE_TRAILERS= "movie/{id}/videos";
+    public static final String MOVIE_REVIEWS= "movie/{id}/reviews";
 
     //    Params names
     private static final String API_KEY_PARAM = "api_key";
@@ -49,21 +53,30 @@ public class TheMoviesDbApiClient {
     }
 
     public static String getMoviesList(String listPath) {
-        Uri moviesListUri = buildBaseUri()
-                .appendEncodedPath(listPath)
-                .build();
+        return performRequestWithPath(listPath);
+    }
 
-        String response = "";
-        URL requestUrl = buildUrlFromUri(moviesListUri);
-        if (requestUrl != null) {
-            try {
-                response = getResponseFromUrl(requestUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    @Nullable
+    public static <T> String getMovieEntities(Class<T> tClass, int id) {
+        if (tClass.equals(Trailer.class)) {
+            return getTrailersForMovie(id);
+        } else if (tClass.equals(Review.class)) {
+            return getReviewsForMovie(id);
         }
 
-        return response;
+        throw new UnsupportedOperationException("Unsupported entity class: " + tClass.getSimpleName());
+    }
+
+    @Nullable
+    public static String getReviewsForMovie(int id) {
+        String trailersPath = MOVIE_REVIEWS.replace("{id}", "" + id);
+        return performRequestWithPath(trailersPath);
+    }
+
+    @Nullable
+    public static String getTrailersForMovie(int id) {
+        String trailersPath = MOVIE_TRAILERS.replace("{id}", "" + id);
+        return performRequestWithPath(trailersPath);
     }
 
     @Nullable
@@ -100,6 +113,25 @@ public class TheMoviesDbApiClient {
             urlConnection.disconnect();
         }
 
+    }
+
+    @Nullable
+    private static String performRequestWithPath(String path) {
+        Uri uri = buildBaseUri()
+                .appendEncodedPath(path)
+                .build();
+
+        String response = null;
+        URL requestUrl = buildUrlFromUri(uri);
+        if (requestUrl != null) {
+            try {
+                response = getResponseFromUrl(requestUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return response;
     }
 
 }

@@ -2,24 +2,26 @@ package com.poissondumars.popularmovies.api;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.poissondumars.popularmovies.R;
+import com.poissondumars.popularmovies.data.ApiResponse;
 import com.poissondumars.popularmovies.data.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * Created by admin on 28.07.17.
- */
 
 public class MoviesDbJSONHelper {
 
+    // Movie fields
     private static final String OWN_ID = "id";
     private static final String OWN_POPULARITY = "vote_average";
     private static final String OWN_TITLE = "title";
@@ -29,6 +31,11 @@ public class MoviesDbJSONHelper {
     private static final String OWN_RELEASE_DATE = "release_date";
 
     public static Movie[] getMoviesFromJson(Context context, String moviesListJson) throws JSONException {
+        Gson gson = new Gson();
+        Type collectionType = new TypeToken<ApiResponse<Movie>>() {}.getType();
+        ApiResponse<Movie> response = gson.fromJson(moviesListJson, collectionType);
+
+        // TODO: Parse response
 
         final String OWN_RESULTS = "results";
 

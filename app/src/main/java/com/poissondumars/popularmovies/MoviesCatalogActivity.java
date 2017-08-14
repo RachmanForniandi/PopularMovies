@@ -46,7 +46,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        loadMoviesList(TheMoviesDbApiClient.POPULAR_MOVIES_LIST);
+        loadMoviesList(TheMoviesDbApiClient.POPULAR_MOVIES);
     }
 
     private int numberOfColumns() {
@@ -75,12 +75,12 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
         if (itemId == R.id.sort_by_popularity_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(TheMoviesDbApiClient.POPULAR_MOVIES_LIST);
+            loadMoviesList(TheMoviesDbApiClient.POPULAR_MOVIES);
         }
 
         if (itemId == R.id.sort_by_rating_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(TheMoviesDbApiClient.TOP_RATED_MOVIES_LIST);
+            loadMoviesList(TheMoviesDbApiClient.TOP_RATED_MOVIES);
         }
 
         return super.onContextItemSelected(item);
