@@ -1,15 +1,19 @@
 package com.poissondumars.popularmovies.data;
 
-/**
- * Created by admin on 14.08.17.
- */
+import com.google.gson.annotations.SerializedName;
 
 public class ApiResponse<T> {
 
     public Integer id;
+
     public Integer page;
+
+    @SerializedName("total_pages")
     public Integer totalPages;
+
+    @SerializedName("total_results")
     public Integer totalResults;
+
     public T[] results;
 
 

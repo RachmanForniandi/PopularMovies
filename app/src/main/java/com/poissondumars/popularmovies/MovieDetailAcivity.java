@@ -1,35 +1,34 @@
 package com.poissondumars.popularmovies;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.data.Movie;
-import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by aleksejsobolevskij on 29.07.17.
- */
-
 public class MovieDetailAcivity extends AppCompatActivity {
 
-    @BindView(R.id.tv_title) TextView mTitleTextView;
-    @BindView(R.id.iv_poster) ImageView mPosterImageView;
-    @BindView(R.id.tv_overview) TextView mOverviewTextView;
-    @BindView(R.id.tv_rating) TextView mRatingTextView;
-    @BindView(R.id.tv_release_date) TextView mReleaseDateTextView;
+    private static final int INFO_PAGE_INDEX = 0;
+    private static final int TRAILERS_PAGE_INDEX = 1;
+    private static final int REVIEWS_PAGE_INDEX = 2;
+
+    @BindView(R.id.tl_movie_tabs)
+    TabLayout tabLayout;
+
+    @BindView(R.id.vp_pager)
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,32 +37,89 @@ public class MovieDetailAcivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        setupViewPager();
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private void setupViewPager() {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new MovieInfoFragment(), getString(R.string.movie_tab_info));
+        viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                didSelectPageWithIndex(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+    }
+
+    private void didSelectPageWithIndex(int index) {
+        switch (index) {
+            case INFO_PAGE_INDEX:
+                prepareInfoPage();
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported pager index " + index);
+        }
+    }
+
+    private void prepareInfoPage() {
+        ViewPagerAdapter pagerAdapter = (ViewPagerAdapter) viewPager.getAdapter();
+        MovieInfoFragment infoFragment = (MovieInfoFragment) pagerAdapter.getFragment(INFO_PAGE_INDEX);
+
+        if (infoFragment == null) {
+            return;
+        }
+
         String movieExtraKey = getString(R.string.movie_extra_key);
         Intent intentThatOpenedThisActivity = getIntent();
         if (intentThatOpenedThisActivity.hasExtra(movieExtraKey)) {
-            Movie selectedMovie = (Movie) intentThatOpenedThisActivity.getParcelableExtra(movieExtraKey);
-            setUpViewsWithMovieData(selectedMovie);
+            Movie selectedMovie = intentThatOpenedThisActivity.getParcelableExtra(movieExtraKey);
+            infoFragment.setMovie(selectedMovie);
         }
     }
 
-    private void setUpViewsWithMovieData(Movie movie) {
-        mTitleTextView.setText(movie.title);
-        mOverviewTextView.setText(movie.overview);
-        String ratingViewText = getString(R.string.rating_tv_template, movie.popularity);
-        mRatingTextView.setText(ratingViewText);
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
 
-        if (movie.releaseDate != null) {
-            String dateFormat = getString(R.string.detail_activity_date_format);
-            DateFormat df = new SimpleDateFormat(dateFormat);
-            String releasedDateViewText = getString(R.string.release_date_tv_template, df.format(movie.releaseDate));
-            mReleaseDateTextView.setText(releasedDateViewText);
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
         }
 
-        Uri posterUri = TheMoviesDbApiClient.buildUriForImage(movie.backdropPath, "w342");
-        Picasso.with(this).load(posterUri)
-                .error(R.drawable.no_image)
-                .placeholder( R.drawable.progress_animation )
-                .fit()
-                .into(mPosterImageView);
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+
+        void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        Fragment getFragment(int index) {
+            return  mFragmentList.get(index);
+        }
     }
+
 }

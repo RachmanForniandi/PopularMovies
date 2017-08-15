@@ -3,21 +3,28 @@ package com.poissondumars.popularmovies.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Date;
-
-/**
- * Created by admin on 28.07.17.
- */
 
 public class Movie implements Parcelable {
 
     public int id;
+
     public double popularity;
+
     public String title;
+
+    @SerializedName("backdrop_path")
     public String backdropPath;
+
+    @SerializedName("poster_path")
     public String posterPath;
+
     public String overview;
+
+    @SerializedName("release_date")
     public Date releaseDate;
 
     public Movie() {}

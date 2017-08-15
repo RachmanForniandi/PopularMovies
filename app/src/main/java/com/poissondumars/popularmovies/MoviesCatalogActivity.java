@@ -17,7 +17,6 @@ import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.data.Movie;
 import com.poissondumars.popularmovies.data.MoviesListAdapter;
 
-import org.json.JSONException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -111,11 +110,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
             String sorting = params[0];
             String response = TheMoviesDbApiClient.getMoviesList(sorting);
             if (response != null) {
-                try {
-                    return MoviesDbJSONHelper.getMoviesFromJson(MoviesCatalogActivity.this, response);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                return MoviesDbJSONHelper.parseMoviesFromJson(response);
             }
 
             return null;

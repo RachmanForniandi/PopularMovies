@@ -14,4 +14,8 @@
 
     <string name="movie_poster_description">Movie Poster</string>
 
+    <string name="movie_tab_info">Info</string>
+    <string name="movie_tab_trailers">Trailers</string>
+    <string name="movie_tab_reviews">Reviews</string>
+
 </resources>
