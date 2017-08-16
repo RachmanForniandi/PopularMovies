@@ -18,4 +18,6 @@
     <string name="movie_tab_trailers">Trailers</string>
     <string name="movie_tab_reviews">Reviews</string>
 
+    <string name="trailer_name_default">Trailer Name</string>
+
 </resources>
