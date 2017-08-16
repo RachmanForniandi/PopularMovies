@@ -22,8 +22,6 @@ import butterknife.ButterKnife;
 
 public class MovieInfoFragment extends Fragment {
 
-    public static final String MOVIE_ARGUMENT = "movie";
-
     @BindView(R.id.tv_title)
     TextView mTitleTextView;
 
@@ -43,24 +41,26 @@ public class MovieInfoFragment extends Fragment {
 
     public MovieInfoFragment() { }
 
+    public static MovieInfoFragment instanseWith(Movie movie) {
+        MovieInfoFragment instance = new MovieInfoFragment();
+        instance.mMovie = movie;
+        return instance;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_info, container, false);
-        ButterKnife.bind(view);
+        ButterKnife.bind(this, view);
+        setUpViewsWithMovieData(mMovie);
         return view;
     }
 
-    public void setMovie(Movie movie) {
-        if (mMovie != null) {
+    private void setUpViewsWithMovieData(Movie movie) {
+        if (movie == null) {
             return;
         }
 
-        mMovie = movie;
-        setUpViewsWithMovieData(mMovie);
-    }
-
-    private void setUpViewsWithMovieData(Movie movie) {
         mTitleTextView.setText(movie.title);
         mOverviewTextView.setText(movie.overview);
         String ratingViewText = getString(R.string.rating_tv_template, movie.popularity);

@@ -30,6 +30,8 @@ public class MovieDetailAcivity extends AppCompatActivity {
     @BindView(R.id.vp_pager)
     ViewPager viewPager;
 
+    private Movie mSelectedMovie;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,55 +39,21 @@ public class MovieDetailAcivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        String movieExtraKey = getString(R.string.movie_extra_key);
+        Intent intentThatOpenedThisActivity = getIntent();
+        if (intentThatOpenedThisActivity.hasExtra(movieExtraKey)) {
+            mSelectedMovie = intentThatOpenedThisActivity.getParcelableExtra(movieExtraKey);
+        }
+
         setupViewPager();
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MovieInfoFragment(), getString(R.string.movie_tab_info));
+        adapter.addFragment(MovieInfoFragment.instanseWith(mSelectedMovie), getString(R.string.movie_tab_info));
+        adapter.addFragment(MovieTrailersFragment.instanseWith(mSelectedMovie), getString(R.string.movie_tab_trailers));
         viewPager.setAdapter(adapter);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                didSelectPageWithIndex(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
-    }
-
-    private void didSelectPageWithIndex(int index) {
-        switch (index) {
-            case INFO_PAGE_INDEX:
-                prepareInfoPage();
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported pager index " + index);
-        }
-    }
-
-    private void prepareInfoPage() {
-        ViewPagerAdapter pagerAdapter = (ViewPagerAdapter) viewPager.getAdapter();
-        MovieInfoFragment infoFragment = (MovieInfoFragment) pagerAdapter.getFragment(INFO_PAGE_INDEX);
-
-        if (infoFragment == null) {
-            return;
-        }
-
-        String movieExtraKey = getString(R.string.movie_extra_key);
-        Intent intentThatOpenedThisActivity = getIntent();
-        if (intentThatOpenedThisActivity.hasExtra(movieExtraKey)) {
-            Movie selectedMovie = intentThatOpenedThisActivity.getParcelableExtra(movieExtraKey);
-            infoFragment.setMovie(selectedMovie);
-        }
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -115,10 +83,6 @@ public class MovieDetailAcivity extends AppCompatActivity {
         void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
-        }
-
-        Fragment getFragment(int index) {
-            return  mFragmentList.get(index);
         }
     }
 

@@ -12,10 +12,6 @@ import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
 import com.poissondumars.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by admin on 28.07.17.
- */
-
 public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.MoviesListAdapterViewHolder> {
 
     class MoviesListAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
