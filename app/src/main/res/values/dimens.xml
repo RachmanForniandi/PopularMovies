@@ -4,6 +4,7 @@
     <dimen name="header_text_size">32sp</dimen>
     <dimen name="detail_movie_poster_height">150dp</dimen>
     <dimen name="content_text_size">18sp</dimen>
-    <dimen name="supplimentory_text_size">14sp</dimen>
+    <dimen name="supplementory_text_size">14sp</dimen>
     <dimen name="trailer_play_image_dimen">32dp</dimen>
+    <dimen name="recycle_item_separator_height">1dp</dimen>
 </resources>

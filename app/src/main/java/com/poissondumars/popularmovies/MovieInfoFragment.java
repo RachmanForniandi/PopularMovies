@@ -3,7 +3,6 @@ package com.poissondumars.popularmovies;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import java.text.SimpleDateFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MovieInfoFragment extends Fragment {
+public class MovieInfoFragment extends MovieFragment {
 
     @BindView(R.id.tv_title)
     TextView mTitleTextView;
@@ -37,29 +36,23 @@ public class MovieInfoFragment extends Fragment {
     @BindView(R.id.tv_release_date)
     TextView mReleaseDateTextView;
 
-    private Movie mMovie;
-
     public MovieInfoFragment() { }
-
-    public static MovieInfoFragment instanseWith(Movie movie) {
-        MovieInfoFragment instance = new MovieInfoFragment();
-        instance.mMovie = movie;
-        return instance;
-    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_info, container, false);
         ButterKnife.bind(this, view);
-        setUpViewsWithMovieData(mMovie);
+
+        restoreInstanceState(savedInstanceState);
+        configureViewsWithMovieData(mMovie);
+
         return view;
     }
 
-    private void setUpViewsWithMovieData(Movie movie) {
-        if (movie == null) {
-            return;
-        }
+    @Override
+    protected void configureViewsWithMovieData(Movie movie) {
+        if (movie == null) return;
 
         mTitleTextView.setText(movie.title);
         mOverviewTextView.setText(movie.overview);
@@ -77,7 +70,6 @@ public class MovieInfoFragment extends Fragment {
         Picasso.with(this.getContext()).load(posterUri)
                 .error(R.drawable.no_image)
                 .placeholder( R.drawable.progress_animation )
-                .fit()
                 .into(mPosterImageView);
     }
 }

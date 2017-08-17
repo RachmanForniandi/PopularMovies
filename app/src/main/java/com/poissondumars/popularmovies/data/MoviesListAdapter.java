@@ -68,7 +68,6 @@ public class MoviesListAdapter extends RecyclerView.Adapter<MoviesListAdapter.Mo
             Picasso.with(context).load(imageUri)
                     .error(R.drawable.no_image)
                     .placeholder( R.drawable.progress_animation )
-                    .fit()
                     .into(imageView);
         }
     }

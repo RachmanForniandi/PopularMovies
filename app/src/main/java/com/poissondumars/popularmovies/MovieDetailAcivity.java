@@ -2,6 +2,7 @@ package com.poissondumars.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -40,8 +41,12 @@ public class MovieDetailAcivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         String movieExtraKey = getString(R.string.movie_extra_key);
+        if (savedInstanceState != null) {
+            mSelectedMovie = savedInstanceState.getParcelable(movieExtraKey);
+        }
+
         Intent intentThatOpenedThisActivity = getIntent();
-        if (intentThatOpenedThisActivity.hasExtra(movieExtraKey)) {
+        if (intentThatOpenedThisActivity != null && intentThatOpenedThisActivity.hasExtra(movieExtraKey)) {
             mSelectedMovie = intentThatOpenedThisActivity.getParcelableExtra(movieExtraKey);
         }
 
@@ -49,10 +54,21 @@ public class MovieDetailAcivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putParcelable(getString(R.string.movie_extra_key), mSelectedMovie);
+
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(MovieInfoFragment.instanseWith(mSelectedMovie), getString(R.string.movie_tab_info));
-        adapter.addFragment(MovieTrailersFragment.instanseWith(mSelectedMovie), getString(R.string.movie_tab_trailers));
+        adapter.addFragment(MovieFragment.instanseWith(MovieInfoFragment.class, mSelectedMovie),
+                getString(R.string.movie_tab_info));
+        adapter.addFragment(MovieFragment.instanseWith(MovieTrailersFragment.class, mSelectedMovie),
+                getString(R.string.movie_tab_trailers));
+        adapter.addFragment(MovieFragment.instanseWith(MovieReviewsFragment.class, mSelectedMovie),
+                getString(R.string.movie_tab_reviews));
         viewPager.setAdapter(adapter);
     }
 

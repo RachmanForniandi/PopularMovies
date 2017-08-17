@@ -18,6 +18,10 @@
     <string name="movie_tab_trailers">Trailers</string>
     <string name="movie_tab_reviews">Reviews</string>
 
+    <string name="play_image_description">Play image</string>
     <string name="trailer_name_default">Trailer Name</string>
+
+    <string name="review_author_name_default">John Doe</string>
+    <string name="review_text_default">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</string>
 
 </resources>

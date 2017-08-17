@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/default_view_margin"
-    android:layout_marginTop="@dimen/default_view_margin"
-    android:orientation="vertical">
+    android:background="@drawable/touch_selector"
+    android:paddingTop="@dimen/default_view_margin"
+    android:paddingBottom="@dimen/default_view_margin">
 
     <ImageView
         android:id="@+id/iv_play_icon"
@@ -15,12 +15,13 @@
         android:layout_marginLeft="@dimen/default_view_margin"
         android:layout_marginStart="@dimen/default_view_margin"
         android:background="@color/colorAccent"
-        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
         android:layout_marginBottom="@dimen/default_view_margin"
         android:layout_marginTop="@dimen/default_view_margin"
-        app:srcCompat="@android:drawable/ic_media_play" />
+        app:srcCompat="@android:drawable/ic_media_play"
+        android:contentDescription="@string/play_image_description" />
 
     <TextView
         android:id="@+id/tv_trailer_name"

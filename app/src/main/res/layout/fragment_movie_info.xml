@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_movie_poster_height"
         android:contentDescription="@string/movie_poster_description"
-        android:scaleType="center" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/tv_overview"
@@ -36,13 +36,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="@dimen/supplimentory_text_size" />
+            android:textSize="@dimen/supplementory_text_size" />
 
         <TextView
             android:id="@+id/tv_release_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="@dimen/supplimentory_text_size" />
+            android:textSize="@dimen/supplementory_text_size" />
     </LinearLayout>
 </LinearLayout>

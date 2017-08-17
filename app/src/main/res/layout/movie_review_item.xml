@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/touch_selector"
+    android:paddingTop="@dimen/default_view_margin"
+    android:paddingBottom="@dimen/default_view_margin">
+
+    <TextView
+        android:id="@+id/tv_review_author_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/review_author_name_default"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="@dimen/default_view_margin"
+        android:layout_marginStart="@dimen/default_view_margin"
+        android:layout_marginLeft="@dimen/default_view_margin"
+        style="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_review_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="@string/review_text_default"
+        android:textSize="@dimen/content_text_size"
+        android:layout_marginTop="@dimen/default_view_margin"
+        app:layout_constraintTop_toBottomOf="@+id/tv_review_author_name"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="@dimen/default_view_margin"
+        android:layout_marginLeft="@dimen/default_view_margin"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="@dimen/default_view_margin"
+        android:layout_marginRight="@dimen/default_view_margin" />
+
+    <View
+        android:layout_width="368dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="@dimen/default_view_margin"
+        app:layout_constraintTop_toBottomOf="@+id/tv_review_text"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_review_text"
+        app:layout_constraintRight_toRightOf="@+id/tv_review_text" />
+
+</android.support.constraint.ConstraintLayout>

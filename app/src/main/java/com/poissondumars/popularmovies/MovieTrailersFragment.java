@@ -1,9 +1,10 @@
 package com.poissondumars.popularmovies;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,10 +21,9 @@ import com.poissondumars.popularmovies.data.Trailer;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MovieTrailersFragment extends Fragment {
+public class MovieTrailersFragment extends MovieFragment implements MovieTrailersAdapter.MovieTrailersAdapterOnClickHandler {
 
     private MovieTrailersAdapter mTrailersAdapter;
-    private Movie mMovie;
 
     @BindView(R.id.rv_trailers_list)
     RecyclerView mTrailersRecycleView;
@@ -33,32 +33,53 @@ public class MovieTrailersFragment extends Fragment {
 
     public MovieTrailersFragment() { }
 
-    public static MovieTrailersFragment instanseWith(Movie movie) {
-        MovieTrailersFragment instance = new MovieTrailersFragment();
-        instance.mMovie = movie;
-        return instance;
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_trailers, container, false);
         ButterKnife.bind(this, view);
 
-        mTrailersAdapter = new MovieTrailersAdapter();
+        mTrailersAdapter = new MovieTrailersAdapter(this);
         mTrailersRecycleView.setAdapter(mTrailersAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
         mTrailersRecycleView.setLayoutManager(layoutManager);
         mTrailersRecycleView.setHasFixedSize(true);
 
-        loadTrailers();
+        restoreInstanceState(savedInstanceState);
+        configureViewsWithMovieData(mMovie);
 
         return view;
     }
 
+    @Override
+    protected void configureViewsWithMovieData(Movie movie) {
+        if (mMovie == null) return;
+
+        loadTrailers();
+    }
+
     private void loadTrailers() {
+        if (mMovie == null) return;
+
         new FetchTrailersTask().execute(mMovie.id);
+    }
+
+    @Override
+    public void onClick(Trailer trailer) {
+        if (trailer.site.equals("YouTube")) {
+            openYouTubeVideo(trailer.key);
+        }
+    }
+
+    private void openYouTubeVideo(String videoId) {
+        Intent applicationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vdn.youtube:" + videoId));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + videoId));
+        try {
+            startActivity(applicationIntent);
+        } catch (Exception e) {
+            startActivity(browserIntent);
+        }
     }
 
     private class FetchTrailersTask extends AsyncTask<Integer, Void, Trailer[]> {

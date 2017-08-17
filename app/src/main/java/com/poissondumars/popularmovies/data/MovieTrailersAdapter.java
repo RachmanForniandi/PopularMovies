@@ -27,11 +27,23 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
 
         @Override
         public void onClick(View v) {
-
+            int index = getAdapterPosition();
+            Trailer selectedTrailer = mTrailers[index];
+            mClickHandler.onClick(selectedTrailer);
         }
     }
 
+    public interface MovieTrailersAdapterOnClickHandler {
+        void onClick(Trailer trailer);
+    }
+
+    private final MovieTrailersAdapterOnClickHandler mClickHandler;
+
     private Trailer[] mTrailers;
+
+    public MovieTrailersAdapter(MovieTrailersAdapterOnClickHandler clickHandler) {
+        mClickHandler = clickHandler;
+    }
 
     @Override
     public MovieTrailersAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
