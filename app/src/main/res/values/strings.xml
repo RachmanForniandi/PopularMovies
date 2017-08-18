@@ -24,4 +24,7 @@
     <string name="review_author_name_default">John Doe</string>
     <string name="review_text_default">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</string>
 
+    <string name="favorite_action_button">Favorite</string>
+    <string name="unfavorite_action_button">Unfavorite</string>
+
 </resources>

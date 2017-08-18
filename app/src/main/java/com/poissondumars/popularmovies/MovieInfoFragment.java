@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +36,12 @@ public class MovieInfoFragment extends MovieFragment {
 
     @BindView(R.id.tv_release_date)
     TextView mReleaseDateTextView;
+
+    @BindView(R.id.b_favorite_action)
+    Button mFavoriteActionButton;
+
+    private static final Integer FAVORITE_BUTTON_STATE_OFF = 0;
+    private static final Integer FAVORITE_BUTTON_STATE_ON = 1;
 
     public MovieInfoFragment() { }
 
@@ -66,10 +73,39 @@ public class MovieInfoFragment extends MovieFragment {
             mReleaseDateTextView.setText(releasedDateViewText);
         }
 
+        mFavoriteActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFavoriteActionButtonClick(v);
+            }
+        });
+
+        updateFavoriteActionButton(movie.isFavorite);
+
         Uri posterUri = TheMoviesDbApiClient.buildUriForImage(movie.backdropPath, "w342");
         Picasso.with(this.getContext()).load(posterUri)
                 .error(R.drawable.no_image)
                 .placeholder( R.drawable.progress_animation )
                 .into(mPosterImageView);
     }
+
+    public void onFavoriteActionButtonClick(View v) {
+        boolean active = ((Integer) v.getTag()).equals(FAVORITE_BUTTON_STATE_ON);
+        updateFavoriteActionButton(!active);
+    }
+
+    private void updateFavoriteActionButton(boolean active) {
+        if (active) {
+            mFavoriteActionButton.setText(getString(R.string.unfavorite_action_button));
+            mFavoriteActionButton.setTextColor(getResources().getColor(android.R.color.white));
+            mFavoriteActionButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            mFavoriteActionButton.setTag(FAVORITE_BUTTON_STATE_ON);
+        } else {
+            mFavoriteActionButton.setText(getString(R.string.favorite_action_button));
+            mFavoriteActionButton.setTextColor(getResources().getColor(R.color.colorAccent));
+            mFavoriteActionButton.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+            mFavoriteActionButton.setTag(FAVORITE_BUTTON_STATE_OFF);
+        }
+    }
+
 }

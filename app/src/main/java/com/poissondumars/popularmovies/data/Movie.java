@@ -27,6 +27,8 @@ public class Movie implements Parcelable {
     @SerializedName("release_date")
     public Date releaseDate;
 
+    public boolean isFavorite;
+
     public Movie() {}
 
     public Movie(Parcel in) {

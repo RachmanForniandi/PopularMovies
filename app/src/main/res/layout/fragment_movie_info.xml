@@ -1,48 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_view_margin"
-        android:textSize="@dimen/header_text_size" />
-
-    <ImageView
-        android:id="@+id/iv_poster"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/detail_movie_poster_height"
-        android:contentDescription="@string/movie_poster_description"
-        android:scaleType="centerCrop" />
-
-    <TextView
-        android:id="@+id/tv_overview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_view_margin"
-        android:textSize="@dimen/content_text_size" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_view_margin"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_rating"
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/supplementory_text_size" />
+            android:layout_margin="@dimen/default_view_margin"
+            android:textSize="@dimen/header_text_size" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_view_margin"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_view_margin"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/supplementory_text_size" />
+
+                <TextView
+                    android:id="@+id/tv_release_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="@dimen/supplementory_text_size" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/b_favorite_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:background="@color/colorPrimaryLight"
+                android:textColor="@color/colorAccent"
+                android:text="@string/favorite_action_button" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_poster"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_movie_poster_height"
+            android:contentDescription="@string/movie_poster_description"
+            android:scaleType="centerCrop" />
 
         <TextView
-            android:id="@+id/tv_release_date"
+            android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/supplementory_text_size" />
+            android:layout_margin="@dimen/default_view_margin"
+            android:textSize="@dimen/content_text_size" />
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

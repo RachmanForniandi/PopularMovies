@@ -3,10 +3,12 @@ package com.poissondumars.popularmovies;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,16 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
     private MoviesListAdapter mMoviesListAdapter;
 
+    private final static String MOVIE_LIST_TYPE_KEY = "list_type";
+
+    private final static int POPULAR_MOVIE_LIST_TYPE = 0;
+    private final static int TOP_RATED_MOVIE_LIST_TYPE = 1;
+    private final static int FAVORITES_MOVIE_LIST_TYPE = 2;
+
+    private final static int DEFAULT_MOVIE_LIST_TYPE = POPULAR_MOVIE_LIST_TYPE;
+
+    private int mCurrentMovieListType;
+
     @BindView(R.id.rv_movies_list) RecyclerView mRecyclerView;
     @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
 
@@ -37,6 +49,11 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
         ButterKnife.bind(this);
 
+        mCurrentMovieListType = DEFAULT_MOVIE_LIST_TYPE;
+        if (savedInstanceState != null) {
+            mCurrentMovieListType = savedInstanceState.getInt(MOVIE_LIST_TYPE_KEY, DEFAULT_MOVIE_LIST_TYPE);
+        }
+
         // Setup adapter
         mMoviesListAdapter = new MoviesListAdapter(this);
         mRecyclerView.setAdapter(mMoviesListAdapter);
@@ -45,21 +62,25 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        loadMoviesList(TheMoviesDbApiClient.POPULAR_MOVIES);
+        loadMoviesList(mCurrentMovieListType);
     }
 
-    private int numberOfColumns() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int widthDivider = 400;
-        int width = displayMetrics.widthPixels;
-        int nColumns = width / widthDivider;
-        if (nColumns < 2) { return 2; }
-        return nColumns;
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
-    private void loadMoviesList(String sorting) {
-        new FetchMoviesTask().execute(sorting);
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putInt(MOVIE_LIST_TYPE_KEY, mCurrentMovieListType);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+
     }
 
     @Override
@@ -74,12 +95,12 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
         if (itemId == R.id.sort_by_popularity_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(TheMoviesDbApiClient.POPULAR_MOVIES);
+            loadMoviesList(POPULAR_MOVIE_LIST_TYPE);
         }
 
         if (itemId == R.id.sort_by_rating_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(TheMoviesDbApiClient.TOP_RATED_MOVIES);
+            loadMoviesList(TOP_RATED_MOVIE_LIST_TYPE);
         }
 
         return super.onContextItemSelected(item);
@@ -91,6 +112,32 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         String movieExtraKey = getString(R.string.movie_extra_key);
         intent.putExtra(movieExtraKey, movie);
         startActivity(intent);
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int widthDivider = 400;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) { return 2; }
+        return nColumns;
+    }
+
+    private void loadMoviesList(int listType) {
+        switch (listType) {
+            case POPULAR_MOVIE_LIST_TYPE:
+                new FetchMoviesTask().execute(TheMoviesDbApiClient.POPULAR_MOVIES);
+                break;
+            case TOP_RATED_MOVIE_LIST_TYPE:
+                new FetchMoviesTask().execute(TheMoviesDbApiClient.TOP_RATED_MOVIES);
+                break;
+            case FAVORITES_MOVIE_LIST_TYPE:
+                new FetchMoviesTask().execute(TheMoviesDbApiClient.POPULAR_MOVIES);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknowl list type: " + listType);
+        }
     }
 
     private class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
