@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 
 import com.poissondumars.popularmovies.api.MoviesDbJSONHelper;
 import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
+import com.poissondumars.popularmovies.data.FavoritesManager;
 import com.poissondumars.popularmovies.data.Movie;
 import com.poissondumars.popularmovies.data.MoviesListAdapter;
 
@@ -103,6 +104,11 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
             loadMoviesList(TOP_RATED_MOVIE_LIST_TYPE);
         }
 
+        if (itemId == R.id.show_favorites_action) {
+            mMoviesListAdapter.setMoviesData(null);
+            loadMoviesList(FAVORITES_MOVIE_LIST_TYPE);
+        }
+
         return super.onContextItemSelected(item);
     }
 
@@ -133,10 +139,10 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
                 new FetchMoviesTask().execute(TheMoviesDbApiClient.TOP_RATED_MOVIES);
                 break;
             case FAVORITES_MOVIE_LIST_TYPE:
-                new FetchMoviesTask().execute(TheMoviesDbApiClient.POPULAR_MOVIES);
+                mMoviesListAdapter.setMoviesData(new FavoritesManager(this).getFavoriteMovies());
                 break;
             default:
-                throw new UnsupportedOperationException("Unknowl list type: " + listType);
+                throw new UnsupportedOperationException("Unknown list type: " + listType);
         }
     }
 

@@ -8,4 +8,20 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="FavoriteButtonBase">
+        <item name="android:padding">@dimen/default_view_margin</item>
+    </style>
+
+    <style name="FavoriteButtonActivated" parent="FavoriteButtonBase">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:text">@string/unfavorite_action_button</item>
+    </style>
+
+    <style name="FavoriteButtonDeactivated" parent="FavoriteButtonBase">
+        <item name="android:background">@color/colorPrimaryLight</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:text">@string/favorite_action_button</item>
+    </style>
+
 </resources>

@@ -1,16 +1,21 @@
 package com.poissondumars.popularmovies;
 
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
+import com.poissondumars.popularmovies.data.FavoritesManager;
 import com.poissondumars.popularmovies.data.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -37,11 +42,13 @@ public class MovieInfoFragment extends MovieFragment {
     @BindView(R.id.tv_release_date)
     TextView mReleaseDateTextView;
 
-    @BindView(R.id.b_favorite_action)
-    Button mFavoriteActionButton;
+    @BindView(R.id.fl_supplementary_container)
+    FrameLayout mSupplementaryContainer;
 
     private static final Integer FAVORITE_BUTTON_STATE_OFF = 0;
     private static final Integer FAVORITE_BUTTON_STATE_ON = 1;
+
+    private FavoritesManager mFavoritesManager;
 
     public MovieInfoFragment() { }
 
@@ -50,6 +57,8 @@ public class MovieInfoFragment extends MovieFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_info, container, false);
         ButterKnife.bind(this, view);
+
+        mFavoritesManager = new FavoritesManager(this.getContext());
 
         restoreInstanceState(savedInstanceState);
         configureViewsWithMovieData(mMovie);
@@ -73,13 +82,6 @@ public class MovieInfoFragment extends MovieFragment {
             mReleaseDateTextView.setText(releasedDateViewText);
         }
 
-        mFavoriteActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFavoriteActionButtonClick(v);
-            }
-        });
-
         updateFavoriteActionButton(movie.isFavorite);
 
         Uri posterUri = TheMoviesDbApiClient.buildUriForImage(movie.backdropPath, "w342");
@@ -90,22 +92,37 @@ public class MovieInfoFragment extends MovieFragment {
     }
 
     public void onFavoriteActionButtonClick(View v) {
-        boolean active = ((Integer) v.getTag()).equals(FAVORITE_BUTTON_STATE_ON);
-        updateFavoriteActionButton(!active);
+        boolean activate = ((Integer) v.getTag()).equals(FAVORITE_BUTTON_STATE_ON);
+            updateFavoriteActionButton(!activate);
+        if (activate) {
+            mFavoritesManager.saveToFavorites(mMovie);
+        } else {
+            mFavoritesManager.removeFromFavorites(mMovie.id);
+        }
     }
 
-    private void updateFavoriteActionButton(boolean active) {
-        if (active) {
-            mFavoriteActionButton.setText(getString(R.string.unfavorite_action_button));
-            mFavoriteActionButton.setTextColor(getResources().getColor(android.R.color.white));
-            mFavoriteActionButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            mFavoriteActionButton.setTag(FAVORITE_BUTTON_STATE_ON);
+    private void updateFavoriteActionButton(boolean activate) {
+        int buttonStyle;
+        Integer buttonTag;
+        if (activate) {
+            buttonStyle = R.style.FavoriteButtonActivated;
+            buttonTag = FAVORITE_BUTTON_STATE_ON;
         } else {
-            mFavoriteActionButton.setText(getString(R.string.favorite_action_button));
-            mFavoriteActionButton.setTextColor(getResources().getColor(R.color.colorAccent));
-            mFavoriteActionButton.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
-            mFavoriteActionButton.setTag(FAVORITE_BUTTON_STATE_OFF);
+            buttonStyle = R.style.FavoriteButtonDeactivated;
+            buttonTag = FAVORITE_BUTTON_STATE_OFF;
         }
+
+        Button favoriteButton = new Button(this.getContext(), null, 0, buttonStyle);
+        favoriteButton.setTag(buttonTag);
+        favoriteButton.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFavoriteActionButtonClick(v);
+            }
+        });
+        mSupplementaryContainer.removeAllViews();
+        mSupplementaryContainer.addView(favoriteButton);
     }
 
 }

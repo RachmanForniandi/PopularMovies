@@ -23,7 +23,8 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/default_view_margin"
                 android:orientation="vertical">
@@ -32,25 +33,21 @@
                     android:id="@+id/tv_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:textSize="@dimen/supplementory_text_size" />
 
                 <TextView
                     android:id="@+id/tv_release_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:textSize="@dimen/supplementory_text_size" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/b_favorite_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:background="@color/colorPrimaryLight"
-                android:textColor="@color/colorAccent"
-                android:text="@string/favorite_action_button" />
+            <FrameLayout
+                android:id="@+id/fl_supplementary_container"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                />
 
         </LinearLayout>
 
