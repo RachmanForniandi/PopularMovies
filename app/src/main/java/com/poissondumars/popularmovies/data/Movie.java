@@ -12,6 +12,7 @@ public class Movie implements Parcelable {
 
     public int id;
 
+    @SerializedName("vote_average")
     public double popularity;
 
     public String title;

@@ -5,11 +5,27 @@
     android:layout_height="match_parent"
     tools:context="com.poissondumars.popularmovies.MoviesCatalogActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_movies_list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_movies_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <TextView
+            android:id="@+id/tv_empty_list_text"
+            android:text="@string/empty_movies_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/header_text_size"
+            android:textColor="@color/colorAccent"
+            android:gravity="center"
+            android:visibility="invisible"/>
+
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/pb_loading_indicator"

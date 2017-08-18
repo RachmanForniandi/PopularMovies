@@ -82,7 +82,8 @@ public class MovieInfoFragment extends MovieFragment {
             mReleaseDateTextView.setText(releasedDateViewText);
         }
 
-        updateFavoriteActionButton(movie.isFavorite);
+        boolean isFavorite = mFavoritesManager.isFavorite(mMovie);
+        updateFavoriteActionButton(isFavorite);
 
         Uri posterUri = TheMoviesDbApiClient.buildUriForImage(movie.backdropPath, "w342");
         Picasso.with(this.getContext()).load(posterUri)
@@ -92,12 +93,12 @@ public class MovieInfoFragment extends MovieFragment {
     }
 
     public void onFavoriteActionButtonClick(View v) {
-        boolean activate = ((Integer) v.getTag()).equals(FAVORITE_BUTTON_STATE_ON);
-            updateFavoriteActionButton(!activate);
-        if (activate) {
-            mFavoritesManager.saveToFavorites(mMovie);
-        } else {
+        boolean activated = ((Integer) v.getTag()).equals(FAVORITE_BUTTON_STATE_ON);
+            updateFavoriteActionButton(!activated);
+        if (activated) {
             mFavoritesManager.removeFromFavorites(mMovie.id);
+        } else {
+            mFavoritesManager.saveToFavorites(mMovie);
         }
     }
 

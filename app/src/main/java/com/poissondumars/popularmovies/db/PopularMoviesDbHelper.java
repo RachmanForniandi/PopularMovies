@@ -37,7 +37,7 @@ public class PopularMoviesDbHelper extends SQLiteOpenHelper {
                         FavoriteMovieEntry.COLUMN_TITLE + " VARCHAR(255) NOT NULL, " +
                         FavoriteMovieEntry.COLUMN_BACKDROP_PATH + " VARCHAR(255) NOT NULL, " +
                         FavoriteMovieEntry.COLUMN_POSTER_PATH + " VARCHAR(255) NOT NULL, " +
-                        FavoriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL " +
+                        FavoriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                         " UNIQUE (" + FavoriteMovieEntry.COLUMN_OUTER_ID + ") ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);

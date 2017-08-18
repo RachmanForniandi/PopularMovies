@@ -5,11 +5,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.poissondumars.popularmovies.db.PopularMoviesContract.FavoriteMovieEntry;
 import com.poissondumars.popularmovies.db.PopularMoviesDbHelper;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class FavoritesManager {
@@ -33,8 +33,7 @@ public class FavoritesManager {
     }
 
     public Movie[] getFavoriteMovies() {
-        ArrayList<Movie> result = new ArrayList<>();
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         Cursor cursor = db.query(FavoriteMovieEntry.TABLE_NAME, MOVIE_COLUMNS, null, null, null, null, null);
         int outerIdIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_OUTER_ID);
@@ -45,6 +44,7 @@ public class FavoritesManager {
         int overviewIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_OVERVIEW);
         int releasedDateIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_RELEASED_DATE);
 
+        Movie[] result = new Movie[cursor.getCount()];
         while (cursor.moveToNext()) {
             Movie favMovie = new Movie();
             favMovie.id = cursor.getInt(outerIdIdx);
@@ -57,10 +57,11 @@ public class FavoritesManager {
             long dateInMills = cursor.getLong(releasedDateIdx);
             favMovie.releaseDate = new Date(dateInMills);
 
-            result.add(favMovie);
+            result[cursor.getPosition()] = favMovie;
         }
+        cursor.close();
 
-        return (Movie[]) result.toArray();
+        return result;
     }
 
     public void saveToFavorites(Movie movie) {
@@ -76,6 +77,19 @@ public class FavoritesManager {
         cv.put(FavoriteMovieEntry.COLUMN_RELEASED_DATE, movie.releaseDate.getTime());
 
         db.insert(FavoriteMovieEntry.TABLE_NAME, null, cv);
+    }
+
+    public boolean isFavorite(Movie movie) {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String sql ="SELECT _ID FROM " +
+                FavoriteMovieEntry.TABLE_NAME + " WHERE "  +
+                FavoriteMovieEntry.COLUMN_OUTER_ID + " = " + movie.id + ";";
+
+        Cursor cursor = db.rawQuery(sql, null);
+        int count = cursor.getCount();
+        cursor.close();
+
+        return count > 0;
     }
 
     public void removeFromFavorites(int movieId) {

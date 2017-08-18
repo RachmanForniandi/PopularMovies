@@ -8,11 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.poissondumars.popularmovies.api.MoviesDbJSONHelper;
 import com.poissondumars.popularmovies.api.TheMoviesDbApiClient;
@@ -38,10 +38,21 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
     private final static int DEFAULT_MOVIE_LIST_TYPE = POPULAR_MOVIE_LIST_TYPE;
 
-    private int mCurrentMovieListType;
+    private String DEFAULT_TITLE;
 
-    @BindView(R.id.rv_movies_list) RecyclerView mRecyclerView;
-    @BindView(R.id.pb_loading_indicator) ProgressBar mLoadingIndicator;
+    private int mCurrentMovieListType = DEFAULT_MOVIE_LIST_TYPE;
+
+    @BindView(R.id.rv_movies_list)
+    RecyclerView mRecyclerView;
+
+    @BindView(R.id.pb_loading_indicator)
+    ProgressBar mLoadingIndicator;
+
+    @BindView(R.id.tv_empty_list_text)
+    TextView mEmptyListText;
+
+    private Movie[] mLoadedMovies;
+    private boolean mNeedReload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +60,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         setContentView(R.layout.activity_movies_catalog);
 
         ButterKnife.bind(this);
-
-        mCurrentMovieListType = DEFAULT_MOVIE_LIST_TYPE;
-        if (savedInstanceState != null) {
-            mCurrentMovieListType = savedInstanceState.getInt(MOVIE_LIST_TYPE_KEY, DEFAULT_MOVIE_LIST_TYPE);
-        }
+        DEFAULT_TITLE = getString(R.string.app_name);
 
         // Setup adapter
         mMoviesListAdapter = new MoviesListAdapter(this);
@@ -62,26 +69,27 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-
-        loadMoviesList(mCurrentMovieListType);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        mCurrentMovieListType = savedInstanceState.getInt(MOVIE_LIST_TYPE_KEY, DEFAULT_MOVIE_LIST_TYPE);
+
+        loadMoviesList(mCurrentMovieListType);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.putInt(MOVIE_LIST_TYPE_KEY, mCurrentMovieListType);
         super.onSaveInstanceState(outState, outPersistentState);
+        outState.putInt(MOVIE_LIST_TYPE_KEY, mCurrentMovieListType);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStart() {
+        super.onStart();
 
-
+        loadMoviesList(mCurrentMovieListType);
     }
 
     @Override
@@ -93,6 +101,9 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
+
+        mNeedReload = true;
+        mLoadedMovies = null;
 
         if (itemId == R.id.sort_by_popularity_action) {
             mMoviesListAdapter.setMoviesData(null);
@@ -126,11 +137,22 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         int widthDivider = 400;
         int width = displayMetrics.widthPixels;
         int nColumns = width / widthDivider;
-        if (nColumns < 2) { return 2; }
+        if (nColumns < 2) {
+            return 2;
+        }
         return nColumns;
     }
 
     private void loadMoviesList(int listType) {
+        updateTitleForListType(listType);
+
+        if (!mNeedReload && mLoadedMovies != null) {
+            updateList(mLoadedMovies);
+            return;
+        }
+
+        mNeedReload = false;
+
         switch (listType) {
             case POPULAR_MOVIE_LIST_TYPE:
                 new FetchMoviesTask().execute(TheMoviesDbApiClient.POPULAR_MOVIES);
@@ -139,10 +161,40 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
                 new FetchMoviesTask().execute(TheMoviesDbApiClient.TOP_RATED_MOVIES);
                 break;
             case FAVORITES_MOVIE_LIST_TYPE:
-                mMoviesListAdapter.setMoviesData(new FavoritesManager(this).getFavoriteMovies());
+                updateList(new FavoritesManager(this).getFavoriteMovies());
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown list type: " + listType);
+        }
+    }
+
+    private void updateTitleForListType(int listType) {
+        String listTypeName;
+
+        switch (listType) {
+            case FAVORITES_MOVIE_LIST_TYPE:
+                listTypeName = getString(R.string.favorites);
+                break;
+            case POPULAR_MOVIE_LIST_TYPE:
+                listTypeName = getString(R.string.popular_movies);
+                break;
+            case TOP_RATED_MOVIE_LIST_TYPE:
+                listTypeName = getString(R.string.top_rated_movies);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown list type: " + listType);
+        }
+
+        setTitle(DEFAULT_TITLE + ": " + listTypeName);
+    }
+
+    private void updateList(Movie[] movies) {
+        mLoadedMovies = movies;
+        if (movies != null && movies.length > 0) {
+            mMoviesListAdapter.setMoviesData(movies);
+        } else {
+            mEmptyListText.setVisibility(View.VISIBLE);
+            mMoviesListAdapter.setMoviesData(null);
         }
     }
 
@@ -152,6 +204,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         protected void onPreExecute() {
             super.onPreExecute();
             mLoadingIndicator.setVisibility(View.VISIBLE);
+            mEmptyListText.setVisibility(View.INVISIBLE);
         }
 
         @Override
@@ -174,9 +227,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
             super.onPostExecute(movies);
             mLoadingIndicator.setVisibility(View.INVISIBLE);
 
-            if (movies != null) {
-                mMoviesListAdapter.setMoviesData(movies);
-            }
+            updateList(movies);
         }
     }
 }
