@@ -3,10 +3,12 @@ package com.poissondumars.popularmovies;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +33,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
     private MoviesListAdapter mMoviesListAdapter;
 
     private final static String MOVIE_LIST_TYPE_KEY = "list_type";
+    private final static String LAYOUT_STATE_KEY = "layout_state";
 
     private final static int POPULAR_MOVIE_LIST_TYPE = 0;
     private final static int TOP_RATED_MOVIE_LIST_TYPE = 1;
@@ -53,6 +56,8 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
     private Movie[] mLoadedMovies;
     private boolean mNeedReload;
+    private LayoutManager mLayoutManager;
+    private Parcelable mLayoutState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,29 +72,52 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         mRecyclerView.setAdapter(mMoviesListAdapter);
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
+        mLayoutManager = layoutManager;
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mCurrentMovieListType = savedInstanceState.getInt(MOVIE_LIST_TYPE_KEY, DEFAULT_MOVIE_LIST_TYPE);
+    protected void onResume() {
+        super.onResume();
 
         loadMoviesList(mCurrentMovieListType);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mLayoutState = savedInstanceState.getParcelable(LAYOUT_STATE_KEY);
+            setCurrentMovieListType(savedInstanceState.getInt(MOVIE_LIST_TYPE_KEY, DEFAULT_MOVIE_LIST_TYPE));
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        outState.putInt(MOVIE_LIST_TYPE_KEY, mCurrentMovieListType);
+
+        onSaveState(outState);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        loadMoviesList(mCurrentMovieListType);
+        onSaveState(outState);
+    }
+
+    private void onSaveState(Bundle state) {
+        mLayoutState = mLayoutManager.onSaveInstanceState();
+        state.putParcelable(LAYOUT_STATE_KEY, mLayoutState);
+        state.putInt(MOVIE_LIST_TYPE_KEY, mCurrentMovieListType);
+    }
+
+    private void restoreLayoutPosition() {
+        if (mLayoutState != null) {
+            mLayoutManager.onRestoreInstanceState(mLayoutState);
+        }
     }
 
     @Override
@@ -107,17 +135,17 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
 
         if (itemId == R.id.sort_by_popularity_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(POPULAR_MOVIE_LIST_TYPE);
+            setCurrentMovieListType(POPULAR_MOVIE_LIST_TYPE);
         }
 
         if (itemId == R.id.sort_by_rating_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(TOP_RATED_MOVIE_LIST_TYPE);
+            setCurrentMovieListType(TOP_RATED_MOVIE_LIST_TYPE);
         }
 
         if (itemId == R.id.show_favorites_action) {
             mMoviesListAdapter.setMoviesData(null);
-            loadMoviesList(FAVORITES_MOVIE_LIST_TYPE);
+            setCurrentMovieListType(FAVORITES_MOVIE_LIST_TYPE);
         }
 
         return super.onContextItemSelected(item);
@@ -129,6 +157,11 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         String movieExtraKey = getString(R.string.movie_extra_key);
         intent.putExtra(movieExtraKey, movie);
         startActivity(intent);
+    }
+
+    private void setCurrentMovieListType(int listType) {
+        mCurrentMovieListType = listType;
+        loadMoviesList(mCurrentMovieListType);
     }
 
     private int numberOfColumns() {
@@ -192,6 +225,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         mLoadedMovies = movies;
         if (movies != null && movies.length > 0) {
             mMoviesListAdapter.setMoviesData(movies);
+            restoreLayoutPosition();
         } else {
             mEmptyListText.setVisibility(View.VISIBLE);
             mMoviesListAdapter.setMoviesData(null);

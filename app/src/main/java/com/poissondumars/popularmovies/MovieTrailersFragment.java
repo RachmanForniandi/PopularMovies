@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +25,17 @@ import butterknife.ButterKnife;
 
 public class MovieTrailersFragment extends MovieFragment implements MovieTrailersAdapter.MovieTrailersAdapterOnClickHandler {
 
-    private MovieTrailersAdapter mTrailersAdapter;
+    private final static String LAYOUT_STATE_KEY = "layout_state";
 
     @BindView(R.id.rv_trailers_list)
     RecyclerView mTrailersRecycleView;
 
     @BindView(R.id.pb_trailers_loading_indicator)
     ProgressBar mLoadingIndicator;
+
+    private LayoutManager mLayoutManager;
+    private Parcelable mLayoutPosition;
+    private MovieTrailersAdapter mTrailersAdapter;
 
     public MovieTrailersFragment() { }
 
@@ -43,13 +49,19 @@ public class MovieTrailersFragment extends MovieFragment implements MovieTrailer
         mTrailersRecycleView.setAdapter(mTrailersAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        mLayoutManager = layoutManager;
         mTrailersRecycleView.setLayoutManager(layoutManager);
         mTrailersRecycleView.setHasFixedSize(true);
 
-        restoreInstanceState(savedInstanceState);
-        configureViewsWithMovieData(mMovie);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        configureViewsWithMovieData(mMovie);
     }
 
     @Override
@@ -57,6 +69,29 @@ public class MovieTrailersFragment extends MovieFragment implements MovieTrailer
         if (mMovie == null) return;
 
         loadTrailers();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mLayoutPosition = savedInstanceState.getParcelable(LAYOUT_STATE_KEY);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Parcelable layoutPosition = mLayoutManager.onSaveInstanceState();
+        outState.putParcelable(LAYOUT_STATE_KEY, layoutPosition);
+    }
+
+    private void restoreLayoutPosition() {
+        if (mLayoutPosition != null) {
+            mLayoutManager.onRestoreInstanceState(mLayoutPosition);
+        }
     }
 
     private void loadTrailers() {
@@ -112,6 +147,7 @@ public class MovieTrailersFragment extends MovieFragment implements MovieTrailer
 
             if (trailers != null) {
                 mTrailersAdapter.setTrailers(trailers);
+                restoreLayoutPosition();
             }
         }
     }

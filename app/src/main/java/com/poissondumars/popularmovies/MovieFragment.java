@@ -1,6 +1,7 @@
 package com.poissondumars.popularmovies;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.poissondumars.popularmovies.data.Movie;
@@ -22,7 +23,10 @@ public class MovieFragment extends Fragment {
         }
     }
 
-    protected void restoreInstanceState(Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         if (savedInstanceState != null) {
             mMovie = savedInstanceState.getParcelable(getString(R.string.movie_extra_key));
         }
@@ -30,8 +34,8 @@ public class MovieFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(getString(R.string.movie_extra_key), mMovie);
         super.onSaveInstanceState(outState);
+        outState.putParcelable(getString(R.string.movie_extra_key), mMovie);
     }
 
     protected void configureViewsWithMovieData(Movie movie) {

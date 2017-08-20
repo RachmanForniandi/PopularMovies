@@ -22,13 +22,17 @@ import butterknife.ButterKnife;
 
 public class MovieReviewsFragment extends MovieFragment {
 
-    private MovieReviewsAdapter mReviewsAdapter;
+    private final static String FIRST_SHOWN_VIEW_POSITION_KEY = "first_shown_view_position";
 
     @BindView(R.id.rv_reviews_list)
     RecyclerView mReviewsRecycleView;
 
     @BindView(R.id.pb_reviews_loading_indicator)
     ProgressBar mLoadingIndicator;
+
+    private LinearLayoutManager mLayoutManager;
+    private Integer mFirstShownViewPosition = -1;
+    private MovieReviewsAdapter mReviewsAdapter;
 
     public MovieReviewsFragment() { }
 
@@ -42,13 +46,19 @@ public class MovieReviewsFragment extends MovieFragment {
         mReviewsRecycleView.setAdapter(mReviewsAdapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext());
+        mLayoutManager = layoutManager;
         mReviewsRecycleView.setLayoutManager(layoutManager);
         mReviewsRecycleView.setHasFixedSize(true);
 
-        restoreInstanceState(savedInstanceState);
-        configureViewsWithMovieData(mMovie);
-
         return view;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        configureViewsWithMovieData(mMovie);
     }
 
     @Override
@@ -56,6 +66,29 @@ public class MovieReviewsFragment extends MovieFragment {
         if (movie == null) return;
 
         loadReviews();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mFirstShownViewPosition = savedInstanceState.getInt(FIRST_SHOWN_VIEW_POSITION_KEY);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Integer firstCompletelyVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+        outState.putInt(FIRST_SHOWN_VIEW_POSITION_KEY, firstCompletelyVisibleItemPosition);
+    }
+
+    private void restoreLayoutPosition() {
+        if (mFirstShownViewPosition >= 0) {
+            mLayoutManager.scrollToPosition(mFirstShownViewPosition);
+        }
     }
 
     private void loadReviews() {
@@ -94,6 +127,7 @@ public class MovieReviewsFragment extends MovieFragment {
 
             if (reviews != null) {
                 mReviewsAdapter.setReviews(reviews);
+                restoreLayoutPosition();
             }
         }
     }

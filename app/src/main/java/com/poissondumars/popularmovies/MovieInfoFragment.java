@@ -1,10 +1,8 @@
 package com.poissondumars.popularmovies;
 
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,10 +58,14 @@ public class MovieInfoFragment extends MovieFragment {
 
         mFavoritesManager = new FavoritesManager(this.getContext());
 
-        restoreInstanceState(savedInstanceState);
-        configureViewsWithMovieData(mMovie);
-
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        configureViewsWithMovieData(mMovie);
     }
 
     @Override
