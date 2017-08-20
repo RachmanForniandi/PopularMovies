@@ -29,4 +29,6 @@
     <string name="favorite_action_button">Favorite</string>
     <string name="unfavorite_action_button">Unfavorite</string>
 
+    <string name="content_authority">com.poissondumars.popularmovies</string>
+
 </resources>

@@ -5,17 +5,23 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
+import com.poissondumars.popularmovies.db.PopularMoviesContract;
 import com.poissondumars.popularmovies.db.PopularMoviesContract.FavoriteMovieEntry;
 import com.poissondumars.popularmovies.db.PopularMoviesDbHelper;
 
 import java.util.Date;
 
-public class FavoritesManager {
+public class FavoritesManager implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private Context mContext;
-    private PopularMoviesDbHelper mDbHelper;
+    private static final int ID_FAVORITES_LOADER = 353;
 
     private final static String[] MOVIE_COLUMNS = {
             FavoriteMovieEntry.COLUMN_OUTER_ID,
@@ -29,13 +35,19 @@ public class FavoritesManager {
 
     public FavoritesManager(Context context) {
         mContext = context;
-        mDbHelper = new PopularMoviesDbHelper(mContext);
     }
 
     public Movie[] getFavoriteMovies() {
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Uri forecastQueryUri = FavoriteMovieEntry.CONTENT_URI;
+        String sortOrder = FavoriteMovieEntry.COLUMN_TITLE + " ASC";
 
-        Cursor cursor = db.query(FavoriteMovieEntry.TABLE_NAME, MOVIE_COLUMNS, null, null, null, null, null);
+        Cursor cursor = new CursorLoader(mContext,
+                forecastQueryUri,
+                MOVIE_COLUMNS,
+                null,
+                null,
+                sortOrder);
+
         int outerIdIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_OUTER_ID);
         int popularityIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_POPULARITY);
         int titleIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_TITLE);
@@ -100,4 +112,32 @@ public class FavoritesManager {
         db.delete(FavoriteMovieEntry.TABLE_NAME, where, whereArgs);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
+        switch (loaderId) {
+            case ID_FAVORITES_LOADER:
+                Uri forecastQueryUri = FavoriteMovieEntry.CONTENT_URI;
+                String sortOrder = FavoriteMovieEntry.COLUMN_TITLE + " ASC";
+
+                return new CursorLoader(mContext,
+                        forecastQueryUri,
+                        MOVIE_COLUMNS,
+                        null,
+                        null,
+                        sortOrder);
+
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Return movies
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }
