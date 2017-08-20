@@ -1,6 +1,7 @@
 package com.poissondumars.popularmovies;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -108,12 +109,14 @@ public class MovieTrailersFragment extends MovieFragment implements MovieTrailer
     }
 
     private void openYouTubeVideo(String videoId) {
-        Intent applicationIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vdn.youtube:" + videoId));
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + videoId));
-        try {
-            startActivity(applicationIntent);
-        } catch (Exception e) {
-            startActivity(browserIntent);
+        Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vdn.youtube:" + videoId));
+        PackageManager packageManager = getActivity().getPackageManager();
+
+        if (youtubeIntent.resolveActivity(packageManager) != null) {
+            startActivity(youtubeIntent);
+        } else {
+            Intent viewVideoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + videoId));
+            startActivity(viewVideoIntent);
         }
     }
 
