@@ -21,8 +21,16 @@
             </intent-filter>
         </activity>
 
+        <!--<activity-->
+            <!--android:name=".MovieDetailActivity"-->
+            <!--android:parentActivityName=".MoviesCatalogActivity">-->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value=".MoviesCatalogActivity" />-->
+        <!--</activity>-->
+
         <activity
-            android:name=".MovieDetailAcivity"
+            android:name=".MovieCollapsingDetailActivity"
             android:parentActivityName=".MoviesCatalogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

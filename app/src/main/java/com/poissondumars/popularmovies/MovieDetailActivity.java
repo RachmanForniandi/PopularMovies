@@ -19,7 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MovieDetailAcivity extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity {
 
     private static final int INFO_PAGE_INDEX = 0;
     private static final int TRAILERS_PAGE_INDEX = 1;

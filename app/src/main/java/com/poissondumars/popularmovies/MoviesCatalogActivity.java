@@ -1,7 +1,6 @@
 package com.poissondumars.popularmovies;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -11,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -156,7 +154,7 @@ public class MoviesCatalogActivity extends AppCompatActivity
 
     @Override
     public void onClick(Movie movie) {
-        Intent intent = new Intent(this, MovieDetailAcivity.class);
+        Intent intent = new Intent(this, MovieDetailActivity.class);
         String movieExtraKey = getString(R.string.movie_extra_key);
         intent.putExtra(movieExtraKey, movie);
         startActivity(intent);
