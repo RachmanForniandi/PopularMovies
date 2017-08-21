@@ -40,7 +40,7 @@ public class Movie implements Parcelable {
         posterPath = in.readString();
         overview = in.readString();
         releaseDate = (Date) in.readSerializable();
-
+        isFavorite = in.readInt() == 1;
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -69,5 +69,6 @@ public class Movie implements Parcelable {
         dest.writeString(posterPath);
         dest.writeString(overview);
         dest.writeSerializable(releaseDate);
+        dest.writeInt(isFavorite ? 1 : 0);
     }
 }

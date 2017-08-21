@@ -56,7 +56,7 @@ public class MovieInfoFragment extends MovieFragment {
         View view = inflater.inflate(R.layout.fragment_movie_info, container, false);
         ButterKnife.bind(this, view);
 
-        mFavoritesManager = new FavoritesManager(this.getContext());
+        mFavoritesManager = new FavoritesManager(this.getContext(), null);
 
         return view;
     }
@@ -84,8 +84,7 @@ public class MovieInfoFragment extends MovieFragment {
             mReleaseDateTextView.setText(releasedDateViewText);
         }
 
-        boolean isFavorite = mFavoritesManager.isFavorite(mMovie);
-        updateFavoriteActionButton(isFavorite);
+        updateFavoriteActionButton(mMovie.isFavorite);
 
         Uri posterUri = TheMoviesDbApiClient.buildUriForImage(movie.backdropPath, "w342");
         Picasso.with(this.getContext()).load(posterUri)

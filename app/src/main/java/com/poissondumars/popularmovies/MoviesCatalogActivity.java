@@ -1,6 +1,7 @@
 package com.poissondumars.popularmovies;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,6 +11,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +28,8 @@ import com.poissondumars.popularmovies.data.MoviesListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MoviesCatalogActivity extends AppCompatActivity implements MoviesListAdapter.MoviesListAdapterOnClickHandler {
+public class MoviesCatalogActivity extends AppCompatActivity
+        implements MoviesListAdapter.MoviesListAdapterOnClickHandler, FavoritesManager.FavoritesManagerListener {
 
     private static final String TAG = MoviesCatalogActivity.class.getSimpleName();
 
@@ -164,6 +167,12 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         loadMoviesList(mCurrentMovieListType);
     }
 
+    private void showLoading() {
+        mLoadingIndicator.setVisibility(View.VISIBLE);
+        mEmptyListText.setVisibility(View.INVISIBLE);
+        mMoviesListAdapter.setMoviesData(null);
+    }
+
     private int numberOfColumns() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -194,7 +203,7 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
                 new FetchMoviesTask().execute(TheMoviesDbApiClient.TOP_RATED_MOVIES);
                 break;
             case FAVORITES_MOVIE_LIST_TYPE:
-                updateList(new FavoritesManager(this).getFavoriteMovies());
+                requestFavoriteMovies();
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown list type: " + listType);
@@ -221,6 +230,11 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
         setTitle(DEFAULT_TITLE + ": " + listTypeName);
     }
 
+    private void requestFavoriteMovies() {
+        showLoading();
+        new FavoritesManager(this, this).requestFavorites();
+    }
+
     private void updateList(Movie[] movies) {
         mLoadedMovies = movies;
         if (movies != null && movies.length > 0) {
@@ -230,6 +244,12 @@ public class MoviesCatalogActivity extends AppCompatActivity implements MoviesLi
             mEmptyListText.setVisibility(View.VISIBLE);
             mMoviesListAdapter.setMoviesData(null);
         }
+    }
+
+    @Override
+    public void loadFavorites(Movie[] favorites) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        updateList(favorites);
     }
 
     private class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {

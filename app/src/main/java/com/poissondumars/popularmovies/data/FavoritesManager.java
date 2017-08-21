@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,10 +20,7 @@ import com.poissondumars.popularmovies.db.PopularMoviesDbHelper;
 
 import java.util.Date;
 
-public class FavoritesManager implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    private Context mContext;
-    private static final int ID_FAVORITES_LOADER = 353;
+public class FavoritesManager {
 
     private final static String[] MOVIE_COLUMNS = {
             FavoriteMovieEntry.COLUMN_OUTER_ID,
@@ -33,20 +32,61 @@ public class FavoritesManager implements LoaderManager.LoaderCallbacks<Cursor> {
             FavoriteMovieEntry.COLUMN_RELEASED_DATE
     };
 
-    public FavoritesManager(Context context) {
-        mContext = context;
+    private Context mContext;
+    private FavoritesManagerListener mListener;
+    private Handler mMainHandler;
+
+    public interface FavoritesManagerListener {
+        void loadFavorites(@Nullable Movie[] favorites);
     }
 
-    public Movie[] getFavoriteMovies() {
-        Uri forecastQueryUri = FavoriteMovieEntry.CONTENT_URI;
-        String sortOrder = FavoriteMovieEntry.COLUMN_TITLE + " ASC";
+    public FavoritesManager(Context context, @Nullable FavoritesManagerListener listener) {
+        mContext = context;
+        mListener = listener;
+        mMainHandler = new Handler(context.getMainLooper());
+    }
 
-        Cursor cursor = new CursorLoader(mContext,
-                forecastQueryUri,
-                MOVIE_COLUMNS,
-                null,
-                null,
-                sortOrder);
+    public void requestFavorites() {
+        Thread requestFavorites = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Cursor favoritesCursor = mContext.getContentResolver().query(
+                        FavoriteMovieEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        FavoriteMovieEntry.COLUMN_TITLE + " ASC");
+
+                final Movie[] favorites = parseFavoriteMoviesFromCursor(favoritesCursor);
+                mMainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mListener != null) {
+                            mListener.loadFavorites(favorites);
+                        }
+                    }
+                });
+            }
+        });
+        requestFavorites.start();
+    }
+
+    public void saveToFavorites(Movie movie) {
+        ContentValues cv = new ContentValues();
+        cv.put(FavoriteMovieEntry.COLUMN_OUTER_ID, movie.id);
+        cv.put(FavoriteMovieEntry.COLUMN_POPULARITY, movie.popularity);
+        cv.put(FavoriteMovieEntry.COLUMN_TITLE, movie.title);
+        cv.put(FavoriteMovieEntry.COLUMN_BACKDROP_PATH, movie.backdropPath);
+        cv.put(FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.posterPath);
+        cv.put(FavoriteMovieEntry.COLUMN_OVERVIEW, movie.overview);
+        cv.put(FavoriteMovieEntry.COLUMN_RELEASED_DATE, movie.releaseDate.getTime());
+
+        mContext.getContentResolver().bulkInsert(FavoriteMovieEntry.CONTENT_URI, new ContentValues[]{cv});
+    }
+
+    @Nullable
+    private Movie[] parseFavoriteMoviesFromCursor(Cursor cursor) {
+        if (cursor == null) return null;
 
         int outerIdIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_OUTER_ID);
         int popularityIdx = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_POPULARITY);
@@ -65,6 +105,7 @@ public class FavoritesManager implements LoaderManager.LoaderCallbacks<Cursor> {
             favMovie.backdropPath = cursor.getString(backdropPathIdx);
             favMovie.posterPath = cursor.getString(posterPathIdx);
             favMovie.overview = cursor.getString(overviewIdx);
+            favMovie.isFavorite = true;
 
             long dateInMills = cursor.getLong(releasedDateIdx);
             favMovie.releaseDate = new Date(dateInMills);
@@ -76,68 +117,10 @@ public class FavoritesManager implements LoaderManager.LoaderCallbacks<Cursor> {
         return result;
     }
 
-    public void saveToFavorites(Movie movie) {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        ContentValues cv = new ContentValues();
-        cv.put(FavoriteMovieEntry.COLUMN_OUTER_ID, movie.id);
-        cv.put(FavoriteMovieEntry.COLUMN_POPULARITY, movie.popularity);
-        cv.put(FavoriteMovieEntry.COLUMN_TITLE, movie.title);
-        cv.put(FavoriteMovieEntry.COLUMN_BACKDROP_PATH, movie.backdropPath);
-        cv.put(FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.posterPath);
-        cv.put(FavoriteMovieEntry.COLUMN_OVERVIEW, movie.overview);
-        cv.put(FavoriteMovieEntry.COLUMN_RELEASED_DATE, movie.releaseDate.getTime());
-
-        db.insert(FavoriteMovieEntry.TABLE_NAME, null, cv);
-    }
-
-    public boolean isFavorite(Movie movie) {
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        String sql ="SELECT _ID FROM " +
-                FavoriteMovieEntry.TABLE_NAME + " WHERE "  +
-                FavoriteMovieEntry.COLUMN_OUTER_ID + " = " + movie.id + ";";
-
-        Cursor cursor = db.rawQuery(sql, null);
-        int count = cursor.getCount();
-        cursor.close();
-
-        return count > 0;
-    }
-
     public void removeFromFavorites(int movieId) {
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        String where = "outer_id = ?";
-        String[] whereArgs = {"" + movieId};
-        db.delete(FavoriteMovieEntry.TABLE_NAME, where, whereArgs);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        switch (loaderId) {
-            case ID_FAVORITES_LOADER:
-                Uri forecastQueryUri = FavoriteMovieEntry.CONTENT_URI;
-                String sortOrder = FavoriteMovieEntry.COLUMN_TITLE + " ASC";
-
-                return new CursorLoader(mContext,
-                        forecastQueryUri,
-                        MOVIE_COLUMNS,
-                        null,
-                        null,
-                        sortOrder);
-
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Return movies
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+        Uri deleteFavoriteUri = FavoriteMovieEntry.CONTENT_URI.buildUpon()
+                .appendPath("" + movieId)
+                .build();
+        mContext.getContentResolver().delete(deleteFavoriteUri, null, null);
     }
 }
